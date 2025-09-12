@@ -1,0 +1,78 @@
+<!-- web/templates/index.html -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Weather Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+<main class="page">
+  <h1>Weather Dashboard</h1>
+  {% if generated_at_utc %}
+    <p class="muted">Generated (UTC): <span class="mono">{{ generated_at_utc }}</span></p>
+  {% endif %}
+
+  <!-- Current Weather -->
+  <section>
+    <h2>Current Weather</h2>
+    <div class="gt gt-current" role="table" aria-label="Current weather">
+      <div class="gt-row gt-head" role="row">
+        <div class="cell" role="columnheader">City</div>
+        <div class="cell" role="columnheader">Local Time</div>
+        <div class="cell" role="columnheader">UTC</div>
+        <div class="cell" role="columnheader">Temp</div>
+        <div class="cell" role="columnheader">RH</div>
+        <div class="cell cell-cond" role="columnheader">Condition</div>
+      </div>
+      <div class="gt-body">
+        {% for r in current %}
+        {% set t = r.temp_c %}
+        {% set tclass = 'hot' if t>=28 else ('warm' if t>=22 else ('cool' if t>=12 else 'cold')) %}
+        <div class="gt-row">
+          <div class="cell">{{ r.city }}</div>
+          <div class="cell mono nowrap">{{ r.time_local }}</div>
+          <div class="cell"><span class="chip chip-utc mono">{{ r.utc_offset }}</span></div>
+          <div class="cell mono nowrap"><span class="temp {{ tclass }}">{{ '%.1f'|format(t) }}°C</span></div>
+          <div class="cell">
+            <div class="meter"><span style="width: {{ r.humidity_pct|default(0) }}%"></span></div>
+            <div class="pct mono">{{ r.humidity_pct }}%</div>
+          </div>
+          <div class="cell cell-cond"><span class="tag" data-cond="{{ r.condition|lower }}">{{ r.condition }}</span></div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <!-- Next 5 Days -->
+  <section>
+    <h2>Next 5 Days</h2>
+    {% for f in forecasts %}
+      <h3>{{ f.city }}</h3>
+      <div class="gt gt-forecast" role="table" aria-label="5-day forecast for {{ f.city }}">
+        <div class="gt-row gt-head" role="row">
+          <div class="cell" role="columnheader">Date</div>
+          <div class="cell" role="columnheader">Min</div>
+          <div class="cell" role="columnheader">Max</div>
+          <div class="cell cell-cond" role="columnheader">Condition</div>
+        </div>
+        <div class="gt-body">
+          {% for d in f.days %}
+          {% set minclass = 'hot' if d.min_c>=28 else ('warm' if d.min_c>=22 else ('cool' if d.min_c>=12 else 'cold')) %}
+          {% set maxclass = 'hot' if d.max_c>=28 else ('warm' if d.max_c>=22 else ('cool' if d.max_c>=12 else 'cold')) %}
+          <div class="gt-row">
+            <div class="cell mono nowrap">{{ d.date }}</div>
+            <div class="cell mono nowrap"><span class="temp {{ minclass }}">{{ '%.1f'|format(d.min_c) }}°C</span></div>
+            <div class="cell mono nowrap"><span class="temp {{ maxclass }}">{{ '%.1f'|format(d.max_c) }}°C</span></div>
+            <div class="cell cell-cond"><span class="tag" data-cond="{{ d.condition|lower }}">{{ d.condition }}</span></div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endfor %}
+  </section>
+</main>
+</body>
+</html>

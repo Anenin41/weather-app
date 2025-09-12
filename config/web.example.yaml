@@ -1,0 +1,10 @@
+# Example web.yaml for Weather Dashboard
+mode: "file"   # or "spawn"
+weather_bin: "../target/release/weather-app"
+rust_config: "../config/rust.yaml"
+json_path: "../data/weather_json"
+cache_ttl_seconds: 120
+server:
+  host: "127.0.0.1"
+  port: 3000
+  debug: false

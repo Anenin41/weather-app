@@ -1,0 +1,9 @@
+# Example rust.yaml for Weather Dashboard
+openweather:
+  api_key: "YOUR_OPENWEATHER_API_KEY"
+  units: "metric"   # metric, imperial, or standard
+  lang: "en"
+app:
+  cities:
+    - "City 1"
+    - "City 2"

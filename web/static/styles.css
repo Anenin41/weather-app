@@ -1,0 +1,152 @@
+:root{
+  /* theme */
+  --bg:#0b1020; --fg:#e8ebf1; --muted:#9aa3b2; --card:#151b2f; --acc:#2f80ed; --line:#27304a;
+
+  /* spacing */
+  --row-py: 14px; --row-px: 32px; --col-gap: 64px; --card-radius: 14px;
+
+  /* page width (100% keeps it full-bleed) */
+  --page-max: 100%;
+
+  --cols-current: 18ch 18ch 12ch 12ch 12ch 1fr;
+  --cols-forecast: 18ch 12ch 12ch 1fr;
+  --pad-wide: 22px;  /* note the semicolon before the comment */
+  --pad-tight: 8px;
+}
+
+/* ===== spacing tweaks for CURRENT table ===== */
+/* add extra right padding after the first 5 columns (City..RH) */
+.gt-current .gt-row > .cell:nth-child(-n+5){
+  padding-right: var(--pad-wide);
+}
+
+/* Condition column: left aligned + tighter left padding */
+.gt-current .gt-row > .cell.cell-cond{
+  text-align: left;
+  padding-left: var(--pad-tight);
+}
+
+/* ===== spacing tweaks for FORECAST tables ===== */
+/* widen spacing after Date/Min/Max */
+.gt-forecast .gt-row > .cell:nth-child(-n+3){
+  padding-right: var(--pad-wide);
+}
+
+/* Condition column in forecast: left aligned + tighter left padding */
+.gt-forecast .gt-row > .cell.cell-cond{
+  text-align: left;
+  padding-left: var(--pad-tight);
+}
+
+/* base */
+*{ box-sizing:border-box }
+html,body{ height:100% }
+body{
+  margin:0; background:var(--bg); color:var(--fg);
+  font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,"Noto Sans",Arial;
+}
+
+.page{
+  max-width: var(--page-max);
+  margin-inline: auto;
+  padding: 24px 16px;
+}
+
+h1{ font-size:28px; margin:0 0 8px }
+h2{ margin:26px 0 14px; font-size:20px; color:var(--acc) }
+h3{ margin:18px 0 10px; color:var(--muted); font-weight:600 }
+section{ margin-bottom: 40px }
+.muted{ color:var(--muted) }
+
+/* type helpers */
+.mono{ font-family: ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace; font-variant-numeric: tabular-nums }
+.nowrap{ white-space:nowrap; }
+
+/* cards built with CSS Grid (consistent columns) */
+.gt{
+  width:100%; max-width:100%;
+  border:1px solid var(--line);
+  border-radius: var(--card-radius);
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  box-shadow: 0 10px 30px rgba(0,0,0,.25);
+  overflow:hidden;
+}
+.gt-row{
+  display:grid;
+  grid-template-columns: var(--cols-current); /* default template for current */
+  align-items:center;
+  padding: var(--row-py) var(--row-px);
+  column-gap: var(--col-gap);
+  border-bottom:1px solid var(--line);
+}
+.gt-row:last-child{ border-bottom:0 }
+.gt-head{
+  color:var(--muted); font-weight:700; letter-spacing:.02em;
+  background: rgba(255,255,255,0.03);
+  padding: calc(var(--row-py) + 2px) var(--row-px);
+}
+.gt-body .gt-row:nth-child(odd){ background: rgba(255,255,255,0.01) }
+.gt-body .gt-row:hover{ background: rgba(255,255,255,0.04) }
+
+.gt-forecast .gt-row {
+  grid-template-columns: var(--cols-forecast);
+  padding: var(--row-py) var(--row-px);
+  column-gap: var(--col-gap);
+}
+
+/* alignment: center everything by default... */
+.gt .cell{ min-width:0; text-align:center }
+/* ...but City column in CURRENT stays left */
+.gt-current .gt-row > .cell:first-child{ text-align:left }
+
+/* badges / pills */
+.chip{
+  display:inline-block; padding:4px 10px; border-radius:999px;
+  background: rgba(255,255,255,0.06); color:var(--fg);
+  line-height:1; font-size:.95rem;
+}
+.chip-utc{ background: rgba(47,128,237,.18); border:1px solid rgba(47,128,237,.25) }
+
+/* temperature cues */
+.temp{ font-weight:700 }
+.temp.hot{ color:#ff8a65 }      /* ≥ 28°C */
+.temp.warm{ color:#ffd166 }     /* 22–27.9°C */
+.temp.cool{ color:#8cd3ff }     /* 12–21.9°C */
+.temp.cold{ color:#9ad0ff }     /* < 12°C */
+
+/* humidity meter (compact, centered) */
+.meter{
+  --h: 8px;
+  position:relative; width: 90%; height: var(--h);
+  margin: 0 auto 4px auto;
+  background:#1f273d; border-radius:999px; overflow:hidden;
+}
+.meter > span{ position:absolute; inset:0 auto 0 0; width:0%; background:linear-gradient(90deg,#2f80ed,#56ccf2); }
+.meter + .pct{ font-size:.9rem; color:var(--muted) }
+
+/* condition tag with semantic colors */
+.tag{ padding:4px 10px; border-radius:999px; background: rgba(255,255,255,.06) }
+.tag[data-cond*="clear"]{ background: rgba(255,215,64,.12); color:#ffd166 }
+.tag[data-cond*="cloud"]{ background: rgba(160,174,192,.12); color:#cbd5e1 }
+.tag[data-cond*="rain"]{ background: rgba(86,204,242,.14); color:#8cd3ff }
+.tag[data-cond*="drizzle"]{ background: rgba(86,204,242,.14); color:#8cd3ff }
+.tag[data-cond*="thunder"]{ background: rgba(255,99,132,.15); color:#ff9aa7 }
+.tag[data-cond*="snow"]{ background: rgba(174,213,255,.18); color:#bcdcff }
+.tag[data-cond*="overcast"]{ background: rgba(160,174,192,.12); color:#cbd5e1 }
+
+/* responsive */
+@media (max-width: 900px){
+  :root{
+    --col-gap: 32px;
+    --cols-current: 20ch 26ch 10ch 10ch 12ch minmax(12ch, 1.4fr);
+    --cols-forecast: 14ch 10ch 10ch minmax(20ch, 2fr);
+    --row-py:12px; --row-px:14px; --pad-wide: 18px;
+  }
+}
+@media (max-width: 640px){
+  :root{
+    --col-gap: 12px;
+    --cols-current: 1fr 22ch 9ch 10ch 12ch 1fr;
+    --cols-forecast: 12ch 10ch 10ch 1fr;
+  }
+}
